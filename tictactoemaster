@@ -1,0 +1,104 @@
+TTTMatrix = Hash[1 => "", 2 => "", 3 => "", 4 => "", 5 => "", 6 => "", 7 => "", 8 => "", 9 => ""]
+PLAYERS = Hash["X" => "", "O" => ""]
+DISPLACEMENT = Hash["H" => 1, "V" => 3, "R" => 2, "L" => 4]
+
+H = [[1,2,3],[4,5,6],[7,8,9]]
+V = [[1,4,7],[2,5,8],[3,6,9]]
+L = [[1,5,9]]
+R = [[3,5,7]]
+
+puts "Player #1 (X) Please type your name:\n"
+PLAYERS["X"] = gets.chomp.upcase
+puts "Player #2 (0) Please type your name:\n"
+PLAYERS["O"] = gets.chomp.upcase
+
+puts "\nLet's start the Game!\n\n"
+
+def game_map()
+    puts "\n"
+    TTTMatrix.each do |key, value|
+        value = " " if value.nil? || value.empty?
+        if key.to_i%3==0
+            print " " + value + "\n"
+        else
+            print " " + value + " |"
+        end
+        print "---+---+---\n" if key.to_i%3==0 && key.to_i <9
+    end
+    puts "\n\n"
+end
+
+def move()
+    last_turn_player = PLAYERS.keys[rand(PLAYERS.keys.length)]
+
+    TTTMatrix.each do |key, value|
+        puts "Player #{PLAYERS[last_turn_player]} please make your move:\n"
+        while true
+            turn = gets.chomp.to_i
+            if turn > 0 && turn < 10
+                unless TTTMatrix[turn].empty?
+                    puts "That position is taken"
+                else
+                    break
+                end
+            else
+                puts "Please enter correct number [1-9]:\n"
+            end
+        end
+        
+        TTTMatrix[turn] = last_turn_player
+        game_map
+        
+        if win_check(turn) == true
+            puts "Player #{last_turn_player} WON!!!"
+            break
+        end
+        
+        if last_turn_player == "X"
+            last_turn_player = "O"
+        else
+            last_turn_player = "X"
+
+        end
+                        
+    end
+
+end
+
+def win_check(turn)
+    answer = false
+    DISPLACEMENT.each do |key, value|
+        for array_tmp in 0..(eval(key).length-1)
+            if eval(key)[array_tmp].include?turn.to_i
+                position = eval(key)[array_tmp].index(turn).to_i
+
+                if position == 0
+                    if TTTMatrix[turn] == TTTMatrix[turn+DISPLACEMENT[key].to_i] && TTTMatrix[turn] == TTTMatrix[turn+DISPLACEMENT[key].to_i*2]
+                        answer=true
+                        break
+                    end
+                elsif position == 1
+                    temp = turn-DISPLACEMENT[key].to_i
+                    if TTTMatrix[turn] == TTTMatrix[turn-DISPLACEMENT[key].to_i] && TTTMatrix[turn] == TTTMatrix[turn+DISPLACEMENT[key].to_i]
+                        answer=true
+                        break
+                    end
+                elsif position == 2
+                    if TTTMatrix[turn] == TTTMatrix[turn-DISPLACEMENT[key].to_i*2] && TTTMatrix[turn] == TTTMatrix[turn-DISPLACEMENT[key].to_i]
+                        answer=true
+
+
+                        break
+                    end
+                else
+                    answer=false
+
+                end
+            end
+        end
+    end
+    answer
+end
+
+game_map()
+move()
