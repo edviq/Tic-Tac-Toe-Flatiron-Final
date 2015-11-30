@@ -37,7 +37,7 @@ def move()
             turn = gets.chomp.to_i
             if turn > 0 && turn < 10
                 unless TTTMatrix[turn].empty?
-                    puts "That position is taken"
+                    puts "This position is taken"
                 else
                     break
                 end
